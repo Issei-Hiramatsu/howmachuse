@@ -88,10 +88,33 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Widget _buildLandscapeContent() {
+    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      Text('Show Chart'),
+      Switch(
+        activeColor: Theme.of(context).colorScheme.secondary,
+        value: _showChart,
+        onChanged: (val) {
+          setState(() {
+            _showChart = val;
+          });
+        },
+      ),
+    ]);
+  }
+
+  Widget _buildPortraitContent(MediaQueryData mediaQuery, AppBar appBar) {
+    return Container(
+        height: (mediaQuery.size.height -
+                appBar.preferredSize.height -
+                mediaQuery.padding.top) *
+            0.3,
+        child: Chart(_recentTransactions));
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    ;
     final isLandscape = mediaQuery.orientation == Orientation.landscape;
     final appBar = AppBar(
       title: const Text('Personal Expenses'),
@@ -114,25 +137,12 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            if (isLandscape)
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Text('Show Chart'),
-                Switch(
-                  value: _showChart,
-                  onChanged: (val) {
-                    setState(() {
-                      _showChart = val;
-                    });
-                  },
-                ),
-              ]),
+            if (isLandscape) _buildLandscapeContent(),
             if (!isLandscape)
-              Container(
-                  height: (mediaQuery.size.height -
-                          appBar.preferredSize.height -
-                          mediaQuery.padding.top) *
-                      0.3,
-                  child: Chart(_recentTransactions)),
+              _buildPortraitContent(
+                mediaQuery,
+                appBar,
+              ),
             if (!isLandscape) txListWidget,
             if (isLandscape)
               _showChart
